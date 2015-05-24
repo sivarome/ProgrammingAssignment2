@@ -1,15 +1,18 @@
-##
-## Matrix inversion is usually a costly computation and there may be 
-## some benefit to caching the inverse of a matrix rather than 
-## compute it repeatedly. 
+#
+## Matrix inversion is usually a costly computation. To avoid unnecessary
+## computation it is good to cache the inverse of a matrix.
 ##
 
 ## Following pair of functions will cache the inverse of a matrix.
 
 ## makeCacheMatrix: 
 ## This function creates a special "matrix" object that can cache its inverse.
-## Input of this function should be a matrix, X
-
+## Input of this function should be a matrix, x
+##  setMatrix  -  To set new matrix value
+##  setInv     -  To cache the inverse of the matrix
+##  getMatrix  -  To get current matrix contents
+##  getInv     -  To get the cached inverse of the matrix
+##
 makeCacheMatrix <- function(x = matrix()) {
   x_inv <- matrix()
   setMatrix <- function(y) {
@@ -43,21 +46,24 @@ makeCacheMatrix <- function(x = matrix()) {
 
 cacheSolve <- function(x, ...) {
   ## Return a matrix that is the inverse of 'x'
-  xInv <- matrix()
+
   xInv <- x$getInv()
   xdata <- x$getMatrix()
-  if(is.na(xInv)) {
-    if (nrow(xdata)==ncol(xdata)) {
-      ##xdata <- x$getMatrix()
-      xInv <- solve(xdata, ...)
-      x$setInv(xInv)
-      
-    } 
-    else
-    {
-      message("Matrix inversion is not possible since the matrix is not a square matrix.")
-      return(NULL)
-    }
+  
+  ## check if the input matrix objext has a square invertible matrix
+  if (nrow(xdata)!=ncol(xdata)) {
+    message ("Please input a square matrix...")
+    return(NULL)
+  }
+  if (det(xdata) == 0) {
+    message ("Matrix inverse not possible for singular matrix...")
+    return(NULL)
+  }
+  
+  ## Find the matrix inverse
+  if(is.na(xInv[1,1])) {
+    xInv <- solve(xdata, ...)
+    x$setInv(xInv)
   }
   else
   {
